@@ -7378,7 +7378,7 @@ func TestNewAtPtr(t *testing.T) {
 	}()
 }
 
-func TestAt(t *testing.T) {
+func TestValueAt(t *testing.T) {
 	i := 0
 	v := ValueOf(&i)
 	defer func() {
@@ -7386,7 +7386,7 @@ func TestAt(t *testing.T) {
 			t.Errorf("should not panic: %s", err)
 		}
 	}()
-	At(v.Type().Elem(), unsafe.Pointer(v.Pointer())).SetInt(10)
+	ValueAt(v.Type().Elem(), unsafe.Pointer(v.Pointer())).SetInt(10)
 	if i != 10 {
 		t.Errorf("created value don't point the same variable")
 	}

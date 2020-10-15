@@ -2419,7 +2419,7 @@ func NewAtPtr(typ Type, p unsafe.Pointer) Value {
 
 // At returns a Value representing a value of the
 // specified type, using p as that pointer.
-func At(typ Type, p unsafe.Pointer) Value {
+func ValueAt(typ Type, p unsafe.Pointer) Value {
 	if typ == nil {
 		panic("reflect: At(nil)")
 	}
