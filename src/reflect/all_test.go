@@ -7393,23 +7393,19 @@ func TestValueAt(t *testing.T) {
 }
 
 func BenchmarkNewAt(b *testing.B) {
-	i := 0
-	v := ValueOf(&i)
+	v := ValueOf(new(int))
 	t := v.Type().Elem()
+	ptr := unsafe.Pointer(v.Pointer())
 	for i := 0; i < b.N; i++ {
-		for i := 0; i < 100; i++ {
-			_ = NewAt(t, unsafe.Pointer(v.Pointer()))
-		}
+		_ = NewAt(t, ptr).Elem()
 	}
 }
 
 func BenchmarkNewAtPtr(b *testing.B) {
-	i := 0
-	v := ValueOf(&i)
+	v := ValueOf(new(int))
 	t := v.Type()
+	ptr := unsafe.Pointer(v.Pointer())
 	for i := 0; i < b.N; i++ {
-		for i := 0; i < 100; i++ {
-			_ = NewAtPtr(t, unsafe.Pointer(v.Pointer()))
-		}
+		_ = NewAtPtr(t, ptr).Elem()
 	}
 }
