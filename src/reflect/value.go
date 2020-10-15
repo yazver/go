@@ -2403,6 +2403,35 @@ func NewAt(typ Type, p unsafe.Pointer) Value {
 	return Value{t.ptrTo(), p, fl}
 }
 
+// NewAtPtr returns a Value representing a pointer to a value of the
+// specified pointer type, using p as that pointer.
+func NewAtPtr(typ Type, p unsafe.Pointer) Value {
+	if typ == nil {
+		panic("reflect: NewAtPtr(nil)")
+	}
+	fl := flag(Ptr)
+	t := typ.(*rtype)
+	if t.Kind() != Ptr {
+		panic("non-pointer type")
+	}
+	return Value{t, p, fl}
+}
+
+// At returns a Value representing a value of the
+// specified type, using p as that pointer.
+func At(typ Type, p unsafe.Pointer) Value {
+	if typ == nil {
+		panic("reflect: At(nil)")
+	}
+	if p == nil {
+		return Value{}
+	}
+	t := typ.(*rtype)
+	fl := flagIndir | flagAddr
+	fl |= flag(t.Kind())
+	return Value{t, p, fl}
+}
+
 // assignTo returns a value v that can be assigned directly to typ.
 // It panics if v is not assignable to typ.
 // For a conversion to an interface type, target is a suggested scratch space to use.

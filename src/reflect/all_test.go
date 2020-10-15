@@ -7354,3 +7354,62 @@ func iterateToString(it *MapIter) string {
 	sort.Strings(got)
 	return "[" + strings.Join(got, ", ") + "]"
 }
+
+func TestNewAtPtr(t *testing.T) {
+	i := 0
+	v := ValueOf(&i)
+	defer func() {
+		if err := recover(); err != nil {
+			t.Errorf("should not panic: %s", err)
+		}
+	}()
+	NewAtPtr(v.Type(), unsafe.Pointer(v.Pointer())).Elem().SetInt(10)
+	if i != 10 {
+		t.Errorf("created value don't point the same variable")
+	}
+
+	func() {
+		defer func() {
+			if recover() == nil {
+				t.Errorf("should panic when type is not a pointer")
+			}
+		}()
+		_ = NewAtPtr(v.Type().Elem(), unsafe.Pointer(v.Pointer()))
+	}()
+}
+
+func TestAt(t *testing.T) {
+	i := 0
+	v := ValueOf(&i)
+	defer func() {
+		if err := recover(); err != nil {
+			t.Errorf("should not panic: %s", err)
+		}
+	}()
+	At(v.Type().Elem(), unsafe.Pointer(v.Pointer())).SetInt(10)
+	if i != 10 {
+		t.Errorf("created value don't point the same variable")
+	}
+}
+
+func BenchmarkNewAt(b *testing.B) {
+	i := 0
+	v := ValueOf(&i)
+	t := v.Type().Elem()
+	for i := 0; i < b.N; i++ {
+		for i := 0; i < 100; i++ {
+			_ = NewAt(t, unsafe.Pointer(v.Pointer()))
+		}
+	}
+}
+
+func BenchmarkNewAtPtr(b *testing.B) {
+	i := 0
+	v := ValueOf(&i)
+	t := v.Type()
+	for i := 0; i < b.N; i++ {
+		for i := 0; i < 100; i++ {
+			_ = NewAtPtr(t, unsafe.Pointer(v.Pointer()))
+		}
+	}
+}
